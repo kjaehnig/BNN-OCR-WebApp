@@ -161,16 +161,18 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         # pred = model.predict(img, batch_size=num_samples)  # Assume model.predict handles BNN sampling
         # st.write(pred)
         # pred = np.percentile(pred, 50, axis=0)  # Median over samples
-        st.write("**What the model sees**")
 
         if len(img)==1:
             if show_model_imgs:
+                st.write("### **What the model sees**")
                 st.image(img[0].reshape(28,28,1),
                     clamp=True,
                     use_column_width='always'
                          )
 
             pred = np.array([model(img[0].reshape(1,28,28,1)).numpy().squeeze() for ii in range(num_samples)])
+            st.write(pred.shape)
+            st.write(pred)
             pred = np.sum(pred, axis=0) / num_samples
             # pred = np.exp(pred) / np.sum(np.exp(pred))
             pred_digit = [np.argmax(pred)]
@@ -184,6 +186,8 @@ def predict_digit_from_canvas(canvas_data, num_samples):
                             clamp=True,
                             use_column_width='always')
             pred = np.array([model(np.array(img).reshape(len(img),28,28,1)).numpy().squeeze() for ii in range(num_samples)])
+            st.write(pred.shape)
+            st.write(pred)
             pred = np.sum(pred, axis=0) / num_samples
 
             pred_digit = ''.join([np.argmax(ii).astype("str") for ii in pred])
