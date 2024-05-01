@@ -120,7 +120,7 @@ print(model.summary())
 earlystop = tf.keras.callbacks.EarlyStopping(
     monitor='val_accuracy',
     patience=10,
-    start_from_epoch=50,
+    start_from_epoch=25,
     restore_best_weights=True,
     mode='max'
 )
@@ -152,4 +152,4 @@ mdlhist = model.fit(train_images,
 model.evaluate(test_images, test_labels)
 print(classification_report(test_labels, model.predict(test_images)))
 
-model.save('/home/lreclusa/repositories/BNN-Digits-Recognizer-App/mnist_bnn')
+model.save('/home/lreclusa/repositories/BNN-OCR-WebApp/mnist_bnn')

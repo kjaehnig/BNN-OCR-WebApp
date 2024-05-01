@@ -169,7 +169,7 @@ if 'no_checkbox_val' not in st.session_state:
 
 st.title('Bayesian MNIST Multi-Digit Classifier')
 
-if st.button('Show Description'):
+if st.checkbox('Show Description'):
     st.write("""
     Bayesian neural networks (BNN) don't fit single value weights when they train. 
     BNNs instead fit distributions with parameters to better describe uncertainty 
@@ -191,10 +191,11 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         st.write("**What the model sees**")
 
         if len(img)==1:
-            st.image(img[0].reshape(28,28,1), 
-                clamp=True,
-                use_column_width='always'
-                     )
+            if show_model_imgs:
+                st.image(img[0].reshape(28,28,1),
+                    clamp=True,
+                    use_column_width='always'
+                         )
 
             pred = np.array([model(img[0].reshape(1,28,28,1)).numpy().squeeze() for ii in range(num_samples)])
             pred = np.sum(pred, axis=0) / num_samples
@@ -203,11 +204,12 @@ def predict_digit_from_canvas(canvas_data, num_samples):
             return img, pred, pred_digit
 
         if len(img) > 1:
-            allcols = st.columns(len(img))
-            for ii, col in enumerate(allcols):
-                col.image(img[ii].reshape(28,28,1), 
-                        clamp=True,
-                        use_column_width='always')
+            if show_model_imgs:
+                allcols = st.columns(len(img))
+                for ii, col in enumerate(allcols):
+                    col.image(img[ii].reshape(28,28,1),
+                            clamp=True,
+                            use_column_width='always')
             pred = np.array([model(np.array(img).reshape(len(img),28,28,1)).numpy().squeeze() for ii in range(num_samples)])
             pred = np.sum(pred, axis=0) / num_samples
 
@@ -247,6 +249,8 @@ with st.sidebar:
 
 
     plot_all_preds = st.checkbox('Plot digit(s) probabilities?', value=False, key='plot_all_checkbox')
+
+    show_model_imgs = st.checkbox("Show model images?", value=False, key='plot_model_imgs')
 
 pred_digit = None
 if pred_digit is None:
