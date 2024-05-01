@@ -28,7 +28,7 @@ def grab_digits_from_canvas(image):
     # print(help(cv2.GaussianBlur))
 
     # Apply adaptive threshold
-    thresh = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+    thresh = cv2.adaptiveThreshold(blur, 255., cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 3)
 
     # Find contours
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -54,12 +54,12 @@ def grab_digits_from_canvas(image):
             # digit_images.append(digit)
 
         if h > w:  # More height than width, pad width
-            pad_size = abs((h - w)) // 1.5
-            digit = cv2.copyMakeBorder(digit, pad_size // 1.5, pad_size // 1.5, pad_size, pad_size, cv2.BORDER_CONSTANT,
+            pad_size = abs((h - w)) // 2
+            digit = cv2.copyMakeBorder(digit, pad_size // 2, pad_size // 2, pad_size, pad_size, cv2.BORDER_CONSTANT,
                                        value=[0, 0, 0])
         else:  # More width than height, pad height
-            pad_size = abs(w - h) // 1.5
-            digit = cv2.copyMakeBorder(digit, pad_size, pad_size, pad_size // 1.5, pad_size // 1.5, cv2.BORDER_CONSTANT,
+            pad_size = abs(w - h) // 2
+            digit = cv2.copyMakeBorder(digit, pad_size, pad_size, pad_size // 2, pad_size // 2, cv2.BORDER_CONSTANT,
                                        value=[0, 0, 0])
         # Resize to 28x28
         resized = cv2.resize(digit, (28, 28), interpolation=cv2.INTER_AREA)
