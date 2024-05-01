@@ -57,7 +57,7 @@ def create_bnn():
     model = Sequential([
     # tf.keras.layers.RandomFlip('horizontal_and_vertical', input_shape=(28, 28, 1)),
     # tf.keras.layers.RandomRotation(0.15, input_shape=(28, 28, 1)),
-    tf.keras.layers.RandomTranslation(0.1, 0.1, input_shape=(28, 28, 1)),
+    tf.keras.layers.RandomTranslation(0.2, 0.2, input_shape=(28, 28, 1)),
     # tf.keras.layers.RandomContrast(0.1, input_shape=(28, 28, 1)),
     # tf.keras.layers.RandomBrightness(0.1),
     # Flatten(),
