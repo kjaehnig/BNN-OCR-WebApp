@@ -162,37 +162,40 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         # st.write(pred)
         # pred = np.percentile(pred, 50, axis=0)  # Median over samples
 
-        if len(img)==1:
-            if show_model_imgs:
-                st.write("### **What the model sees**")
-                st.image(img[0].reshape(28,28,1),
-                    clamp=True,
-                    use_column_width='always'
-                         )
+        # if len(img)==1:
+        #     if show_model_imgs:
+        #         st.write("### **What the model sees**")
+        #         st.image(img[0].reshape(28,28,1),
+        #             clamp=True,
+        #             use_column_width='always'
+        #                  )
+        #
+        #     pred = np.array([model(img[0].reshape(1,28,28,1)).numpy().squeeze() for ii in range(num_samples)])
+        #     st.write(pred.shape)
+        #     st.write(pred)
+        #     pred = np.sum(pred, axis=0) / num_samples
+        #     # pred = np.exp(pred) / np.sum(np.exp(pred))
+        #     pred_digit = [np.argmax(pred)]
+        #     return img, pred, pred_digit
 
-            pred = np.array([model(img[0].reshape(1,28,28,1)).numpy().squeeze() for ii in range(num_samples)])
-            st.write(pred.shape)
-            st.write(pred)
-            pred = np.sum(pred, axis=0) / num_samples
-            # pred = np.exp(pred) / np.sum(np.exp(pred))
-            pred_digit = [np.argmax(pred)]
-            return img, pred, pred_digit
-
-        if len(img) > 1:
-            if show_model_imgs:
-                allcols = st.columns(len(img))
-                for ii, col in enumerate(allcols):
-                    col.image(img[ii].reshape(28,28,1),
-                            clamp=True,
-                            use_column_width='always')
-            pred = np.array([model(np.array(img).reshape(len(img),28,28,1)).numpy().squeeze() for ii in range(num_samples)])
-            st.write(pred.shape)
-            st.write(np.unique(pred))
-            pred = np.sum(pred, axis=0) / num_samples
-            st.write(pred.shape)
-            st.write(np.unique(pred))
-            pred_digit = ''.join([np.argmax(ii).astype("str") for ii in pred])
-            return img, pred, pred_digit
+        # if len(img) > 1:
+        if show_model_imgs:
+            allcols = st.columns(len(img))
+            for ii, col in enumerate(allcols):
+                col.image(img[ii].reshape(28,28,1),
+                        clamp=True,
+                        use_column_width='always')
+        pred = np.zeros((num_samples, len(img)))
+        for ii in range(num_samples):
+            pred[ii, :] = model(np.array(img).reshape(len(img),28,28,1)).numpy().squeeze()
+        # pred = np.array([model(np.array(img).reshape(len(img),28,28,1)).numpy().squeeze() for ii in range(num_samples)])
+        st.write(pred.shape)
+        st.write(np.unique(pred))
+        pred = np.sum(pred, axis=0) / num_samples
+        st.write(pred.shape)
+        st.write(np.unique(pred))
+        pred_digit = ''.join([np.argmax(ii).astype("str") for ii in pred])
+        return img, pred, pred_digit
     return "No digit drawn or image not processed correctly."
 
 
