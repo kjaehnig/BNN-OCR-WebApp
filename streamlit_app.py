@@ -155,7 +155,7 @@ if st.checkbox('Show Description'):
 def predict_digit_from_canvas(canvas_data, num_samples):
     if canvas_data is not None:
         # Preprocessing
-        img = grab_digits_from_canvas(canvas_data)
+        img = grab_digits_from_canvas(canvas_data.astype('float32'))
         # st.write([ii.shape for ii in img])
         # Prediction
         # pred = model.predict(img, batch_size=num_samples)  # Assume model.predict handles BNN sampling
