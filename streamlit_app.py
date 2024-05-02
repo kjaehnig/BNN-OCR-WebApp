@@ -28,7 +28,7 @@ def grab_digits_from_canvas(image):
     # print(help(cv2.GaussianBlur))
 
     # Apply adaptive threshold
-    thresh = cv2.adaptiveThreshold(gray, 255., cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 3)
+    thresh = cv2.adaptiveThreshold(blur, 255., cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 3)
 
     # Find contours
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -155,7 +155,7 @@ if st.checkbox('Show Description'):
 def predict_digit_from_canvas(canvas_data, num_samples):
     if canvas_data is not None:
         # Preprocessing
-        img = grab_digits_from_canvas(canvas_data)
+        img = grab_digits_from_canvas(canvas_data.astype('float64'))
         # st.write([ii.shape for ii in img])
         # Prediction
         # pred = model.predict(img, batch_size=num_samples)  # Assume model.predict handles BNN sampling
@@ -193,8 +193,8 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         # st.write(np.unique(pred))
         pred = np.sum(pred, axis=-1) / num_samples
         st.write(pred.shape)
-        st.write(np.unique(pred))
-        pred_digit = ''.join([np.argmax(pred[:, ii]).astype("str") for ii in range(len(img))])
+        # st.write(np.unique(pred))
+        pred_digit = ''.join([np.argmax(pred[ii, :]).astype("str") for ii in range(len(img))])
         return img, pred, pred_digit
     return "No digit drawn or image not processed correctly."
 
@@ -263,6 +263,8 @@ if img is not None and plot_all_preds:
             st.write("**Probabilities across possible digits**")
         for ii in range(pred.shape[0]):
             st.write(f"**Probabilities for position {ii}, Classified as a {pred_digit[ii]}**")
+            if not isinstance(pred, np.ndarray):
+                pred = np.array(pred)
             st.bar_chart(data=pred.squeeze()[ii].T)
 
 
