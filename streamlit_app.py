@@ -211,7 +211,7 @@ with st.container():
     st.write("**Try it out! Draw digits (0-9) on the canvas**")
     # Streamlit canvas for drawing digits
     canvas_result = st_canvas(
-        stroke_width=15, 
+        stroke_width=12,
         stroke_color='#ffffff',
         background_color='#000000', 
         height=315, 
