@@ -27,8 +27,8 @@ tfpl = tfp.layers
 # Use the EMNIST digit datasets
 dspath = '/mnt/g/WSL/downloaded_ml_data/emnist-all/'
 train, test = (
-    pd.read_csv(dspath+'emnist-mnist-train.csv'),
-    pd.read_csv(dspath+"emnist-mnist-test.csv")
+    pd.read_csv(dspath+'emnist-digit-train.csv'),
+    pd.read_csv(dspath+"emnist-digit-test.csv")
     )
 
 train_labels, test_labels = train.iloc[:, 0].values, test.iloc[:, 0].values
