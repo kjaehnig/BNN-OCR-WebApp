@@ -24,14 +24,14 @@ def grab_digits_from_canvas(image):
     # print(gray.shape)
 
     # Apply GaussianBlur
-    blur = cv2.GaussianBlur(gray, (1,1), 0, 0)
+    blur = cv2.GaussianBlur(gray, (5,5), 0, 0)
     # print(help(cv2.GaussianBlur))
 
     # Apply adaptive threshold
-    thresh = cv2.adaptiveThreshold(blur, 255., cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 7, 3)
+    thresh = cv2.adaptiveThreshold(blur, 255., cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
 
     # Find contours
-    contours, hierarchy = cv2.findContours(gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     # cv2.imshow('Threshold', thresh)
     # cv2.waitKey(0)
