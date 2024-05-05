@@ -27,14 +27,14 @@ tfpl = tfp.layers
 # Use the EMNIST digit datasets
 dspath = '/mnt/g/WSL/downloaded_ml_data/emnist-all/'
 train, test = (
-    pd.read_csv(dspath+'emnist-digit-train.csv'),
-    pd.read_csv(dspath+"emnist-digit-test.csv")
+    pd.read_csv(dspath+'emnist-digits-train.csv'),
+    pd.read_csv(dspath+"emnist-digits-test.csv")
     )
 
 train_labels, test_labels = train.iloc[:, 0].values, test.iloc[:, 0].values
 train_images, test_images = (
-    train.iloc[:, 1:].values.reshape(train.shape[0], 28, 28, 1),
-    test.iloc[:, 1:].values.reshape(test.shape[0], 28, 28, 1)
+    train.iloc[:, 1:].values.reshape(-1, 28, 28, 1),
+    test.iloc[:, 1:].values.reshape(-1, 28, 28, 1)
     )
 
 # Normalize pixel values
@@ -153,33 +153,33 @@ print("Evaluating with EMNIST test set")
 model.evaluate(test_images, test_labels)
 print(classification_report(test_labels, model.predict(test_images)))
 #
-# print("#"*40)
-# print("Evaluating with Orig MNIST test set")
-#
-# # Load MNIST data
-# # Use the EMNIST digit datasets
-# dspath = '/mnt/g/WSL/downloaded_ml_data/emnist-all/'
-# mtrain, mtest = (
-#     pd.read_csv(dspath+'emnist-mnist-train.csv'),
-#     pd.read_csv(dspath+"emnist-mnist-test.csv")
-#     )
-#
-# mtrain_labels, mtest_labels = mtrain.iloc[:, 0].values, mtest.iloc[:, 0].values
-# mtrain_images, mtest_images = (
-#     mtrain.iloc[:, 1:].values.reshape(mtrain.shape[0], 28, 28, 1),
-#     mtest.iloc[:, 1:].values.reshape(mtest.shape[0], 28, 28, 1)
-#     )
-#
-# # Normalize pixel values
-# mtrain_images, mtest_images = mtrain_images / 255.0, mtest_images / 255.0
-# print(mtrain_images.shape, mtrain_labels.shape)
-#
-# # Reshape images to have single-channel
-# # train_images, test_images = (train_images.reshape(train_images.shape[0], 28, 28, 1),
-# #                              test_images.reshape(test_images.shape[0], 28, 28, 1))
-# # One-hot encode labels
-# mtrain_labels, mtest_labels = to_categorical(mtrain_labels), to_categorical(mtest_labels)
-# model.evaluate(mtest_images, mtest_labels)
-# print(classification_report(mtest_labels, model.predict(mtest_images)))
+print("#"*40)
+print("Evaluating with Orig MNIST test set")
+
+# Load MNIST data
+# Use the EMNIST digit datasets
+dspath = '/mnt/g/WSL/downloaded_ml_data/emnist-all/'
+mtrain, mtest = (
+    pd.read_csv(dspath+'emnist-mnist-train.csv'),
+    pd.read_csv(dspath+"emnist-mnist-test.csv")
+    )
+
+mtrain_labels, mtest_labels = mtrain.iloc[:, 0].values, mtest.iloc[:, 0].values
+mtrain_images, mtest_images = (
+    mtrain.iloc[:, 1:].values.reshape(-1, 28, 28, 1),
+    mtest.iloc[:, 1:].values.reshape(-1, 28, 28, 1)
+    )
+
+# Normalize pixel values
+mtrain_images, mtest_images = mtrain_images / 255.0, mtest_images / 255.0
+print(mtrain_images.shape, mtrain_labels.shape)
+
+# Reshape images to have single-channel
+# train_images, test_images = (train_images.reshape(train_images.shape[0], 28, 28, 1),
+#                              test_images.reshape(test_images.shape[0], 28, 28, 1))
+# One-hot encode labels
+mtrain_labels, mtest_labels = to_categorical(mtrain_labels), to_categorical(mtest_labels)
+model.evaluate(mtest_images, mtest_labels)
+print(classification_report(mtest_labels, model.predict(mtest_images)))
 
 model.save('/home/lreclusa/repositories/BNN-OCR-WebApp/mnist_bnn')
