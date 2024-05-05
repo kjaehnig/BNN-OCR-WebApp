@@ -62,7 +62,7 @@ def grab_digits_from_canvas(image):
             digit = cv2.copyMakeBorder(digit, pad_size, pad_size, pad_size // 2, pad_size // 2, cv2.BORDER_CONSTANT,
                                        value=[0, 0, 0])
         # Resize to 28x28
-        resized = cv2.resize(digit, (28, 28), interpolation=cv2.INTER_AREA)
+        # resized = cv2.resize(digit, (28, 28), interpolation=cv2.INTER_AREA)
         digit_images.append(resized)
         # Draw rectangle around each digit on the original image
         # cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
