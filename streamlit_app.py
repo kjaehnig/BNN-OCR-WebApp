@@ -24,7 +24,7 @@ def grab_digits_from_canvas(image):
     # print(gray.shape)
 
     # Apply GaussianBlur
-    blur = cv2.GaussianBlur(gray, (5, 5), 0, 0)
+    blur = cv2.GaussianBlur(gray, (1,1), 0, 0)
     # print(help(cv2.GaussianBlur))
 
     # Apply adaptive threshold
