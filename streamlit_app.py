@@ -116,11 +116,13 @@ def plot_preprocessed_image(img):
 
 @st.cache_resource
 def load_model_into_streamlit():
-    loaded_model = load_model('mnist_bnn',
-                   compile=False,)
-                   # custom_objects={'neg_loglike':neg_loglike,
-                   #                 'divergence':divergence})
-    loaded_model.trainable = False
+    with st.spinner("Loading TensorFlow model..."):
+        loaded_model = load_model('mnist_bnn',
+                       compile=False,)
+# custom_objects={'neg_loglike':neg_loglike,
+#                 'divergence':divergence})
+
+        loaded_model.trainable = False
     return loaded_model 
 
 model = load_model_into_streamlit()
