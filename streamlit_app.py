@@ -49,7 +49,7 @@ def grab_digits_from_canvas(image):
         print(x, y, w, h)
 
         # Make sure the contour area is a likely digit (optional, adjust sizes as needed)
-        if w > 10 and h > 25:
+        if w > 10 and h > 10:
             digit = gray[y:y + h, x:x + w]
             # digit_images.append(digit)
 
