@@ -116,7 +116,7 @@ def plot_preprocessed_image(img):
 
 @st.cache_resource
 def load_model_into_streamlit():
-    loaded_model = load_model('mnist_bnn/',
+    loaded_model = load_model('mnist_bnn',
                    compile=False,)
                    # custom_objects={'neg_loglike':neg_loglike,
                    #                 'divergence':divergence})
