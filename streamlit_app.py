@@ -191,7 +191,7 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         # for ii in range(num_samples):
         #     pred[:, :, ii] = (model(digit.reshape(28, 28, 1)).numpy().squeeze() for digit in img)
 
-        pred = np.array([model(np.array(np.rot90(img, k=2)).reshape(-1, 28, 28, 1)).numpy().squeeze() for ii in range(num_samples)])
+        pred = np.array([model(np.array(np.rot90(img, k=)).reshape(-1, 28, 28, 1)).numpy().squeeze() for ii in range(num_samples)])
         st.write(pred.shape)
         # st.write(np.unique(pred))
         pred = np.sum(pred, axis=0) / num_samples
