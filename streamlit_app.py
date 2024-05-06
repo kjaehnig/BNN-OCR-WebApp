@@ -16,7 +16,7 @@ def divergence(q,p,_):
 def load_bal_map():
     bal_maps = pd.read_csv('emnist-balanced-mapping.csv')
 
-    map_dict = dict(zip([ii for ii in range(47)], [chr(balmap.values[ii,1]) for ii in range(47)]))
+    map_dict = dict(zip([ii for ii in range(47)], [chr(bal_maps.values[ii,1]) for ii in range(47)]))
 
     return map_dict
 
