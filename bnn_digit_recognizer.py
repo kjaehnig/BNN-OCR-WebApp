@@ -145,10 +145,10 @@ for num in range(10):
 mdlhist = model.fit(train_images,
                     train_labels,
                     # class_weight=cws,
-                    batch_size=1024,
+                    batch_size=512,
                     epochs=200,
                     validation_data=(test_images, test_labels),
-                    callbacks=[earlystop, reduce_lr])
+                    callbacks=[reduce_lr])
 
 print("Evaluating with EMNIST test set")
 model.evaluate(test_images, test_labels)
@@ -175,12 +175,13 @@ mtrain_images, mtest_images = (
 mtrain_images, mtest_images = mtrain_images / 255.0, mtest_images / 255.0
 print(mtrain_images.shape, mtrain_labels.shape)
 
-# Reshape images to have single-channel
-# train_images, test_images = (train_images.reshape(train_images.shape[0], 28, 28, 1),
-#                              test_images.reshape(test_images.shape[0], 28, 28, 1))
-# One-hot encode labels
-mtrain_labels, mtest_labels = to_categorical(mtrain_labels), to_categorical(mtest_labels)
-model.evaluate(mtest_images, mtest_labels)
-print(classification_report(mtest_labels, model.predict(mtest_images)))
+if n_labels == 10:
+    # Reshape images to have single-channel
+    train_images, test_images = (train_images.reshape(train_images.shape[0], 28, 28, 1),
+                                 test_images.reshape(test_images.shape[0], 28, 28, 1))
+    # One-hot encode labels
+    mtrain_labels, mtest_labels = to_categorical(mtrain_labels), to_categorical(mtest_labels)
+    model.evaluate(mtest_images, mtest_labels)
+    print(classification_report(mtest_labels, model.predict(mtest_images)))
 
 model.save('/home/lreclusa/repositories/BNN-OCR-WebApp/mnist_bnn')
