@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 from streamlit_drawable_canvas import st_canvas
 import matplotlib.pyplot as plt
+import pandas as pd
 
 def neg_loglike(ytrue, ypred):
     return -ypred.log_prob(ytrue)
@@ -12,55 +13,15 @@ def divergence(q,p,_):
     return tfd.kl_divergence(q,p)/60000.
 
 
-balanced_mapping = {
-    0: 48,
-    1: 49,
-    2: 50,
-    3: 51,
-    4: 52,
-    5: 53,
-    6: 54,
-    7: 55,
-    8: 56,
-    9: 57,
-    10: 65,
-    11: 66,
-    12: 67,
-    13: 68,
-    14: 69,
-    15: 70,
-    16: 71,
-    17: 72,
-    18: 73,
-    19: 74,
-    20: 75,
-    21: 76,
-    22: 77,
-    23: 78,
-    24: 79,
-    25: 80,
-    26: 81,
-    27: 82,
-    28: 83,
-    29: 84,
-    30: 85,
-    31: 86,
-    32: 87,
-    33: 88,
-    34: 89,
-    35: 90,
-    36: 97,
-    37: 98,
-    38: 100,
-    39: 101,
-    40: 102,
-    41: 103,
-    42: 104,
-    43: 110,
-    44: 113,
-    45: 114,
-    46: 116,
-    }
+def load_bal_map():
+    bal_maps = pd.read_csv('emnist-balanced-mapping.csv')
+
+    map_dict = dict(zip([ii for ii in range(47)], [chr(balmap.values[ii,1]) for ii in range(47)]))
+
+    return map_dict
+
+
+map_dict = load_bal_map()
 
 def grab_digits_from_canvas(image):
     if image is None:
@@ -78,7 +39,7 @@ def grab_digits_from_canvas(image):
     # print(help(cv2.GaussianBlur))
 
     # Apply adaptive threshold
-    thresh = cv2.adaptiveThreshold(blur, 127., 255., cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+    thresh = cv2.adaptiveThreshold(blur, 255., cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
 
     # Find contours
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -121,7 +82,7 @@ def grab_digits_from_canvas(image):
     mnist_digits = []
     for digit in digit_images:
         # Resize to 28x28
-        # resized = cv2.resize(digit, (28, 28), interpolation=cv2.INTER_AREA)
+        resized = cv2.resize(digit, (28, 28), interpolation=cv2.INTER_AREA)
         # Normalize pixel values to 0-1
         normalized = digit / 255.0
         mnist_digits.append(normalized)
@@ -145,7 +106,7 @@ def process_image(image_data):
 
 def plot_prediction_probs(probs):
     fig, ax = plt.subplots(figsize=(4,4))
-    ax.bar(range(10), probs.squeeze(), tick_label=range(10))
+    ax.bar([map_dict[ii] for ii in range(probs.shape[0])], probs.squeeze(), tick_label=range(10))
     ax.set_title("BNN Predictions")
     plt.xlabel('Probability')
     plt.ylabel('Digit')

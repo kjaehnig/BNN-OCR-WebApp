@@ -48,7 +48,7 @@ print(train_images.shape, train_labels.shape)
 #                              test_images.reshape(test_images.shape[0], 28, 28, 1))
 # One-hot encode labels
 n_labels = len(np.unique(test_labels))
-lbl_names = [chr(int(bal_maps.values[ii,1])) for ii in np.unique(test_labels)]
+lbl_names = [chr(int(bal_maps.values[ii, 1])) for ii in np.unique(test_labels)]
 print(lbl_names)
 train_labels, test_labels = to_categorical(train_labels), to_categorical(test_labels)
 
