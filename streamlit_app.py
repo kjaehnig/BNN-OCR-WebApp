@@ -241,7 +241,7 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         for ii in range(num_samples):
             rot_imgs = np.array(img)
 
-            rot_imgs = np.array([np.rot90(digi, k=2, axes=(0, 1)) for digi in img])
+            rot_imgs = np.array([np.rot90(digi, k=3, axes=(0, 1)) for digi in img])
 
             pred[:, :, ii] = model(rot_imgs.reshape(-1, 28, 28, 1)).numpy().squeeze()
 
