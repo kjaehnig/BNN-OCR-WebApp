@@ -27,8 +27,8 @@ tfpl = tfp.layers
 # Use the EMNIST digit datasets
 dspath = '/mnt/g/WSL/downloaded_ml_data/emnist-all/'
 train, test = (
-    pd.read_csv(dspath+'emnist-digits-train.csv'),
-    pd.read_csv(dspath+"emnist-digits-test.csv")
+    pd.read_csv(dspath+'emnist-balanced-train.csv'),
+    pd.read_csv(dspath+"emnist-balanced-test.csv")
     )
 
 train_labels, test_labels = train.iloc[:, 0].values, test.iloc[:, 0].values
@@ -45,6 +45,7 @@ print(train_images.shape, train_labels.shape)
 # train_images, test_images = (train_images.reshape(train_images.shape[0], 28, 28, 1),
 #                              test_images.reshape(test_images.shape[0], 28, 28, 1))
 # One-hot encode labels
+n_labels = len(np.unique(test_labels))
 train_labels, test_labels = to_categorical(train_labels), to_categorical(test_labels)
 
 def neg_loglike(ytrue, ypred):
@@ -56,7 +57,7 @@ def divergence(q,p,_):
 def create_bnn():
     model = Sequential([
     # tf.keras.layers.RandomFlip('horizontal_and_vertical', input_shape=(28, 28, 1)),
-    tf.keras.layers.RandomRotation(0.5, input_shape=(28, 28, 1)),
+    # tf.keras.layers.RandomRotation(0.25, input_shape=(28, 28, 1)),
     tf.keras.layers.RandomTranslation(0.2, 0.2, input_shape=(28, 28, 1)),
     # tf.keras.layers.RandomContrast(0.1, input_shape=(28, 28, 1)),
     # tf.keras.layers.RandomBrightness(0.1),
@@ -94,22 +95,22 @@ def create_bnn():
                       kernel_divergence_fn=divergence,
                       bias_divergence_fn=divergence),
     Dropout(0.1),
-    tfpl.DenseFlipout(64,
+    tfpl.DenseFlipout(256,
                       activation='relu',
                       kernel_divergence_fn=divergence,
                       bias_divergence_fn=divergence),
     Dropout(0.1),
-    tfpl.DenseFlipout(10,
+    tfpl.DenseFlipout(n_labels,
                       activation='relu',
                       kernel_divergence_fn=divergence,
                       bias_divergence_fn=divergence),
 
-    tfpl.OneHotCategorical(10,convert_to_tensor_fn=tfd.Distribution.mode)
+    tfpl.OneHotCategorical(n_labels,convert_to_tensor_fn=tfd.Distribution.mode)
     ])
     return model
 
 model = create_bnn()
-model.compile(optimizer=Adam(learning_rate=1e-4),
+model.compile(optimizer=Adam(learning_rate=5e-4),
               loss=neg_loglike,
               metrics=['accuracy'],
               experimental_run_tf_function=False
