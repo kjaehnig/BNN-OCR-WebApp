@@ -78,7 +78,7 @@ def grab_digits_from_canvas(image):
     # print(help(cv2.GaussianBlur))
 
     # Apply adaptive threshold
-    thresh = cv2.adaptiveThreshold(blur, 255., cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+    thresh = cv2.adaptiveThreshold(blur, 127., 255., cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV)
 
     # Find contours
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -241,7 +241,7 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         for ii in range(num_samples):
             rot_imgs = np.array(img)
 
-            rot_imgs = np.array([np.rot90(digi, k=4, axes=(0, 1)) for digi in img])
+            rot_imgs = np.array([np.rot90(digi, k=1, axes=(0, 1)) for digi in img])
 
             pred[:, :, ii] = model(rot_imgs.reshape(-1, 28, 28, 1)).numpy().squeeze()
 
