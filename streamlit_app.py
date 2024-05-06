@@ -71,9 +71,9 @@ def grab_digits_from_canvas(image):
     mnist_digits = []
     for digit in digit_images:
         # Resize to 28x28
-        resized = cv2.resize(digit, (28, 28), interpolation=cv2.INTER_AREA)
+        # resized = cv2.resize(digit, (28, 28), interpolation=cv2.INTER_AREA)
         # Normalize pixel values to 0-1
-        normalized = resized / 255.0
+        normalized = digit / 255.0
         mnist_digits.append(normalized)
 
     return mnist_digits
@@ -189,7 +189,7 @@ def predict_digit_from_canvas(canvas_data, num_samples):
                         use_column_width='always')
         pred = np.zeros((len(img), 10, num_samples))
         for ii in range(num_samples):
-            pred[:, :, ii] = model(np.array(img).reshape(-1, 28, 28, 1).astype("float32")).numpy().squeeze()
+            pred[:, :, ii] = model(np.array(img).reshape(-1, 28, 28, 1)).numpy().squeeze()
 
         # pred = np.array([model(np.array(img).reshape(len(img),28,28,1)).numpy().squeeze() for ii in range(num_samples)])
         st.write(pred.shape)
