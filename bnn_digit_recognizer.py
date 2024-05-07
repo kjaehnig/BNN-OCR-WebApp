@@ -60,8 +60,8 @@ def divergence(q,p,_):
 
 def create_bnn():
     model = Sequential([
-    # tf.keras.layers.RandomFlip('horizontal_and_vertical', input_shape=(28, 28, 1)),
-    tf.keras.layers.RandomRotation(0.05, input_shape=(28, 28, 1)),
+    tf.keras.layers.RandomFlip('horizontal', input_shape=(28, 28, 1)),
+    # tf.keras.layers.RandomRotation(0.05, input_shape=(28, 28, 1)),
     # tf.keras.layers.RandomTranslation(0.1, 0.1, input_shape=(28, 28, 1)),
     # tf.keras.layers.RandomContrast(0.1, input_shape=(28, 28, 1)),
     # tf.keras.layers.RandomBrightness(0.1),
@@ -89,7 +89,7 @@ def create_bnn():
 
     MaxPooling2D((2, 2), padding='same'),
 
-    tfpl.Convolution2DFlipout(64,
+    tfpl.Convolution2DFlipout(32,
         kernel_size=(3, 3),
         strides=(1, 1),
         padding='same',
@@ -103,7 +103,11 @@ def create_bnn():
     MaxPooling2D((2, 2), padding='same'),
 
     Flatten(),
-
+    tfpl.DenseFlipout(512,
+                      activation='relu',
+                      kernel_divergence_fn=divergence,
+                      bias_divergence_fn=divergence),
+    Dropout(0.5),
     tfpl.DenseFlipout(128,
                       activation='relu',
                       kernel_divergence_fn=divergence,
