@@ -17,6 +17,7 @@ from tensorflow.keras.layers import (Dense, Conv2D, MaxPooling2D,
                                      concatenate)
 from tensorflow.keras.optimizers import Adam, SGD
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras import backend as K
 
 tfd = tfp.distributions
 tfpl = tfp.layers
@@ -40,6 +41,27 @@ train_images, test_images = (
 
 bal_maps = pd.read_csv(dspath+'emnist-balanced-mapping.csv')
 # Normalize pixel values
+
+
+THREE_CHANNEL_TRANSFER_LEARNING = False
+
+if THREE_CHANNEL_TRANSFER_LEARNING:
+    train_images = tf.image.grayscale_to_rgb(
+        tf.image.resize(
+            tf.convert_to_tensor(train_images),
+            [32, 32],
+            method='area'
+        )
+    )
+    test_images = tf.image.grayscale_to_rgb(
+        tf.image.resize(
+            tf.convert_to_tensor(test_images),
+            [32, 32],
+            method='area'
+        )
+    )
+
+
 train_images, test_images = train_images / 255.0, test_images / 255.0
 print(train_images.shape, train_labels.shape)
 
@@ -52,6 +74,11 @@ lbl_names = [chr(int(bal_maps.values[ii, 1])) for ii in np.unique(test_labels)]
 print(lbl_names)
 train_labels, test_labels = to_categorical(train_labels), to_categorical(test_labels)
 
+train_datagen = tf.data.Dataset.from_tensor_slices((train_images, train_labels)).shuffle(10000).batch(512)
+test_datagen = tf.data.Dataset.from_tensor_slices((test_images, test_labels)).shuffle(10000).batch(512)
+
+print(train_images.shape, test_images.shape)
+
 def neg_loglike(ytrue, ypred):
     return -ypred.log_prob(ytrue)
 
@@ -61,58 +88,66 @@ def divergence(q,p,_):
 def create_bnn():
     model = Sequential([
     tf.keras.layers.RandomFlip('horizontal', input_shape=(28, 28, 1)),
-    # tf.keras.layers.RandomRotation(0.05, input_shape=(28, 28, 1)),
+    tf.keras.layers.RandomRotation(0.05, input_shape=(28, 28, 1)),
     # tf.keras.layers.RandomTranslation(0.1, 0.1, input_shape=(28, 28, 1)),
     # tf.keras.layers.RandomContrast(0.1, input_shape=(28, 28, 1)),
     # tf.keras.layers.RandomBrightness(0.1),
     # Flatten(),
-    tfpl.Convolution2DFlipout(128,
-        kernel_size=(5, 5),
-        strides=(1, 1),
-        padding='same',
-        activation='relu',
-        kernel_divergence_fn=divergence,
-        bias_divergence_fn=divergence, ),
-    # SpatialDropout2D(0.05),
-
-    MaxPooling2D((2, 2), padding='same'),
-
-    tfpl.Convolution2DFlipout(64,
-        kernel_size=(3, 3),
-        strides=(1, 1),
-        padding='same',
-        activation='relu',
-        kernel_divergence_fn=divergence,
-        bias_divergence_fn=divergence, ),
-    # SpatialDropout2D(0.01),
-
-
-    MaxPooling2D((2, 2), padding='same'),
 
     tfpl.Convolution2DFlipout(32,
         kernel_size=(3, 3),
         strides=(1, 1),
         padding='same',
-        activation='relu',
+        activation='linear',
         kernel_divergence_fn=divergence,
         bias_divergence_fn=divergence, ),
-    # SpatialDropout2D(0.01),
-
-    # MaxPooling2D((2, 2), padding='same'),
+    # SpatialDropout2D(0.05),
+    Activation("relu"),
 
     MaxPooling2D((2, 2), padding='same'),
 
+    Conv2D(128,
+        kernel_size=(5, 5),
+        strides=(1, 1),
+        padding='same',
+        activation='linear'),
+    # # SpatialDropout2D(0.01),
+    #
+    Activation("relu"),
+
+    MaxPooling2D((2, 2), padding='same'),
+
+    Conv2D(256,
+        kernel_size=(7, 7),
+        strides=(1, 1),
+        padding='same',
+        activation='linear'),
+    # # SpatialDropout2D(0.01),
+    #
+    Activation("relu"),
+
     Flatten(),
-    tfpl.DenseFlipout(512,
-                      activation='relu',
-                      kernel_divergence_fn=divergence,
-                      bias_divergence_fn=divergence),
-    Dropout(0.5),
-    tfpl.DenseFlipout(128,
-                      activation='relu',
-                      kernel_divergence_fn=divergence,
-                      bias_divergence_fn=divergence),
-    Dropout(0.5),
+    Dense(128, activation='linear'),
+    # Dropout(0.05),
+    # tfpl.DenseFlipout(64,
+    #                   activation='linear',
+    #                   kernel_divergence_fn=divergence,
+    #                   bias_divergence_fn=divergence),
+    Activation("relu"),
+    Dropout(0.1),
+
+    # tfpl.DenseFlipout(64,
+    #                   activation='linear',
+    #                   kernel_divergence_fn=divergence,
+    #                   bias_divergence_fn=divergence),
+    # # Dropout(0.05),
+    # # tfpl.DenseFlipout(64,
+    # #                   activation='linear',
+    # #                   kernel_divergence_fn=divergence,
+    # #                   bias_divergence_fn=divergence),
+    # Activation("relu"),
+    # Dropout(0.1),
+
     tfpl.DenseFlipout(n_labels,
                       activation='relu',
                       kernel_divergence_fn=divergence,
@@ -122,10 +157,58 @@ def create_bnn():
     ])
     return model
 
+from tensorflow.keras.applications import EfficientNetV2B0
+
+effnet = EfficientNetV2B0(
+    include_top=False,
+    weights='imagenet',
+    input_shape=(32, 32, 3),
+    pooling='avg'
+)
+effnet.trainable = False
+def create_tfbnn():
+    K.clear_session()
+    mdl = Sequential()
+    mdl.add(tf.keras.layers.RandomFlip(
+        'horizontal_and_vertical',
+        input_shape=(32, 32, 3))
+    )
+    mdl.add(effnet)
+
+    mdl.add(Flatten())
+
+    mdl.add(tfpl.DenseFlipout(512,
+                      activation='linear',
+                      kernel_divergence_fn=divergence,
+                      bias_divergence_fn=divergence)
+            )
+
+    mdl.add(Activation("relu"))
+    mdl.add(Dropout(0.05))
+
+    mdl.add(tfpl.DenseFlipout(96,
+                      activation='linear',
+                      kernel_divergence_fn=divergence,
+                      bias_divergence_fn=divergence)
+            )
+
+    mdl.add(Activation("relu"))
+    mdl.add(Dropout(0.05))
+
+    mdl.add(tfpl.DenseFlipout(n_labels,
+                      activation='relu',
+                      kernel_divergence_fn=divergence,
+                      bias_divergence_fn=divergence)
+            )
+
+    mdl.add(tfpl.OneHotCategorical(n_labels,convert_to_tensor_fn=tfd.Distribution.mode)
+            )
+
+    return mdl
 
 
 model = create_bnn()
-model.compile(optimizer=Adam(learning_rate=1e-3),
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
               loss=neg_loglike,
               metrics=['accuracy'],
               experimental_run_tf_function=False
@@ -136,7 +219,7 @@ print(model.summary())
 earlystop = tf.keras.callbacks.EarlyStopping(
     monitor='val_accuracy',
     patience=10,
-    start_from_epoch=25,
+    start_from_epoch=50,
     restore_best_weights=True,
     mode='max'
 )
@@ -144,7 +227,7 @@ earlystop = tf.keras.callbacks.EarlyStopping(
 reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
     monitor='val_accuracy',
     factor = 0.95,
-    patience=5,
+    patience=10,
     cooldown=5,
     mode='max',
     min_lr=1e-7,
@@ -157,12 +240,11 @@ class_weights = class_weight.compute_class_weight(class_weight='balanced',
 cws = {}
 for num in range(10):
     cws[num] = class_weights[num]
-mdlhist = model.fit(train_images,
-                    train_labels,
+mdlhist = model.fit(train_datagen,
                     # class_weight=cws,
-                    batch_size=512,
+                    # batch_size=256,
                     epochs=200,
-                    validation_data=(test_images, test_labels),
+                    validation_data=test_datagen,
                     callbacks=[reduce_lr, earlystop])
 
 print("Evaluating with EMNIST test set")
