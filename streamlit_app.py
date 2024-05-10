@@ -208,7 +208,7 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         for num, digi in enumerate(img):
             pred_prob = np.empty(shape=(num_samples, n_classes))
             for ii in range(num_samples):
-                pred_prob[ii] = model(digi[np.newaxis, :]).numpy()[0]
+                pred_prob[ii] = model(digi[np.newaxis, :]).mean().numpy()[0]
             pred50 = np.array([np.percentile(pred_prob[:, i], 50) for i in range(n_classes)])
             pred_dict[num] = pred50
         # pred = np.array([model(np.array(img).reshape(-1, 28, 28, 1)).numpy().squeeze() for ii in range(num_samples)])
@@ -284,7 +284,7 @@ if img is not None and plot_all_preds:
             st.write("**Probabilities across possible digits** "+f":red[{single_sample_warning}]")
         else:
             st.write("**Probabilities across possible digits**")
-        for ii in range(pred.shape[0]):
+        for ii in range(len(list(pred.keys()))):
             st.write(f"**Probabilities for position {ii}, Classified as a {pred_digit[ii]}**")
             if not isinstance(pred, np.ndarray):
                 pred = np.array(pred)
