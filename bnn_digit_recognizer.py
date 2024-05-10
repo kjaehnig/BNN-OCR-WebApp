@@ -74,8 +74,8 @@ lbl_names = [chr(int(bal_maps.values[ii, 1])) for ii in np.unique(test_labels)]
 print(lbl_names)
 train_labels, test_labels = to_categorical(train_labels), to_categorical(test_labels)
 
-train_datagen = tf.data.Dataset.from_tensor_slices((train_images, train_labels)).shuffle(10000).batch(512)
-test_datagen = tf.data.Dataset.from_tensor_slices((test_images, test_labels)).shuffle(10000).batch(512)
+train_datagen = tf.data.Dataset.from_tensor_slices((train_images, train_labels)).shuffle(10000).batch(1024)
+test_datagen = tf.data.Dataset.from_tensor_slices((test_images, test_labels)).shuffle(10000).batch(1024)
 
 print(train_images.shape, test_images.shape)
 
@@ -88,14 +88,14 @@ def divergence(q,p,_):
 def create_bnn():
     model = Sequential([
     tf.keras.layers.RandomFlip('horizontal', input_shape=(28, 28, 1)),
-    tf.keras.layers.RandomRotation(0.05, input_shape=(28, 28, 1)),
+    tf.keras.layers.RandomRotation(0.1, input_shape=(28, 28, 1)),
     # tf.keras.layers.RandomTranslation(0.1, 0.1, input_shape=(28, 28, 1)),
     # tf.keras.layers.RandomContrast(0.1, input_shape=(28, 28, 1)),
     # tf.keras.layers.RandomBrightness(0.1),
     # Flatten(),
 
-    tfpl.Convolution2DFlipout(32,
-        kernel_size=(3, 3),
+    tfpl.Convolution2DFlipout(128,
+        kernel_size=(3,3),
         strides=(1, 1),
         padding='same',
         activation='linear',
@@ -106,7 +106,7 @@ def create_bnn():
 
     MaxPooling2D((2, 2), padding='same'),
 
-    Conv2D(128,
+    Conv2D(32,
         kernel_size=(5, 5),
         strides=(1, 1),
         padding='same',
@@ -125,6 +125,7 @@ def create_bnn():
     # # SpatialDropout2D(0.01),
     #
     Activation("relu"),
+    MaxPooling2D((2, 2), padding='same'),
 
     Flatten(),
     Dense(128, activation='linear'),
@@ -134,7 +135,7 @@ def create_bnn():
     #                   kernel_divergence_fn=divergence,
     #                   bias_divergence_fn=divergence),
     Activation("relu"),
-    Dropout(0.1),
+    Dropout(0.5),
 
     # tfpl.DenseFlipout(64,
     #                   activation='linear',
@@ -308,4 +309,6 @@ if n_labels == 10:
     model.evaluate(mtest_images, mtest_labels)
     print(classification_report(mtest_labels, model.predict(mtest_images)))
 
-model.save('/home/lreclusa/repositories/BNN-OCR-WebApp/mnist_bnn')
+model.save('/home/lreclusa/repositories/BNN-OCR-WebApp/mnist_bnn.keras',
+           custom_objects={'neg_loglike': neg_loglike,
+                           'divergence': divergence})

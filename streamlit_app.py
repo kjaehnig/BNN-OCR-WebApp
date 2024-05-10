@@ -85,7 +85,7 @@ def grab_digits_from_canvas(image):
         # Resize to 28x28
         resized = cv2.resize(digit, (28, 28), interpolation=cv2.INTER_AREA)
         # Normalize pixel values to 0-1
-        normalized = digit / 255.0
+        normalized = resized / 255.0
         mnist_digits.append(normalized)
 
     return mnist_digits
@@ -130,7 +130,7 @@ def plot_preprocessed_image(img):
 def load_model_into_streamlit():
     with st.spinner("Loading TensorFlow model..."):
         loaded_model = load_model(
-            'mnist_bnn',
+            'mnist_bnn.keras',
             compile=True,
             custom_objects={
                 'neg_loglike':neg_loglike,
