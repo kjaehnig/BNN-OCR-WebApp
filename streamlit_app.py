@@ -214,7 +214,7 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         # st.write(pred.shape)
         # st.write(np.unique(pred))
         pred_digit = ''.join([map_dict[np.argmax(pred_dict[digi])] for digi in range(len(img))])
-        return img, pred, pred_digit
+        return img, pred_dict, pred_digit
     return "No digit drawn or image not processed correctly."
 
 
