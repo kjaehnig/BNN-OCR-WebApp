@@ -39,7 +39,7 @@ def grab_digits_from_canvas(image):
     # print(help(cv2.GaussianBlur))
 
     # Apply adaptive threshold
-    thresh = cv2.adaptiveThreshold(blur, 255., cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+    thresh = cv2.adaptiveThreshold(blur, 200., cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
 
     # Find contours
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -198,15 +198,15 @@ def predict_digit_from_canvas(canvas_data, num_samples):
                 col.image(img[ii].reshape(28,28,1),
                         clamp=True,
                         use_column_width='always')
-        # pred = np.zeros((len(img), 47, num_samples))
-        # for ii in range(num_samples):
-        #     rot_imgs = np.array(img)
-        #
-        #     # rot_imgs = np.array([np.rot90(digi, k=1, axes=(0, 1)) for digi in img])
-        #
-        #     pred[:, :, ii] = model(rot_imgs.reshape(-1, 28, 28, 1)).numpy().squeeze()
+        pred = np.zeros((len(img), 47, num_samples))
+        for ii in range(num_samples):
+            rot_imgs = np.array(img)
 
-        pred = np.array([model(np.array(img).reshape(-1, 28, 28, 1)).numpy().squeeze() for ii in range(num_samples)])
+            # rot_imgs = np.array([np.rot90(digi, k=1, axes=(0, 1)) for digi in img])
+
+            pred[:, :, ii] = model(rot_imgs.reshape(-1, 28, 28, 1)).numpy().squeeze()
+
+        # pred = np.array([model(np.array(img).reshape(-1, 28, 28, 1)).numpy().squeeze() for ii in range(num_samples)])
         st.write(pred.shape)
         # st.write(np.unique(pred))
         pred = np.sum(pred, axis=2) / num_samples
