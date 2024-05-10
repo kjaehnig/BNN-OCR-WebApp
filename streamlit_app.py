@@ -198,21 +198,22 @@ def predict_digit_from_canvas(canvas_data, num_samples):
                 col.image(img[ii].reshape(28,28,1),
                         clamp=True,
                         use_column_width='always')
-        pred = np.zeros((len(img), 47, num_samples))
-        for ii in range(num_samples):
-            rot_imgs = np.array(img)
-
-            # rot_imgs = np.array([np.rot90(digi, k=1, axes=(0, 1)) for digi in img])
-
-            pred[:, :, ii] = model(rot_imgs.reshape(-1, 28, 28, 1)).mean().numpy().squeeze()
-
+        # pred = np.zeros((len(img), 47, num_samples))
+        pred_dict = {}
+        n_classes = 47
+        for num, digi in enumerate(img):
+            pred_prob = np.empty(shape=(num_samples, n_classes))
+            for ii in range(num_samples):
+                pred_prob[ii] = model(digi[np.newaxis, :]).mean().numpy()[0]
+            pred50 = np.array([np.percentile(pred_prob[:, i], 50) for i in range(n_classes)])
+            pred_dict[num] = pred50
         # pred = np.array([model(np.array(img).reshape(-1, 28, 28, 1)).numpy().squeeze() for ii in range(num_samples)])
-        st.write(pred.shape)
+        # st.write(pred.shape)
         # st.write(np.unique(pred))
-        pred = np.sum(pred, axis=2) / num_samples
-        st.write(pred.shape)
+        # pred = np.sum(pred, axis=2) / num_samples
+        # st.write(pred.shape)
         # st.write(np.unique(pred))
-        pred_digit = ''.join([map_dict[np.argmax(pred[digi, :])] for digi in range(len(img))])
+        pred_digit = ''.join([map_dict[np.argmax(pred_dict[digi])] for digi in range(len(img))])
         return img, pred, pred_digit
     return "No digit drawn or image not processed correctly."
 
