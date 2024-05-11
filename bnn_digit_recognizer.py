@@ -138,6 +138,15 @@ def create_bnn():
     Activation("relu"),
     Dropout(0.5),
 
+    Dense(128, activation='linear'),
+    # Dropout(0.05),
+    # tfpl.DenseFlipout(64,
+    #                   activation='linear',
+    #                   kernel_divergence_fn=divergence,
+    #                   bias_divergence_fn=divergence),
+    Activation("relu"),
+    Dropout(0.5),
+
     # tfpl.DenseFlipout(64,
     #                   activation='linear',
     #                   kernel_divergence_fn=divergence,
@@ -310,4 +319,4 @@ if n_labels == 10:
     model.evaluate(mtest_images, mtest_labels)
     print(classification_report(mtest_labels, model.predict(mtest_images)))
 
-model.save('/home/lreclusa/repositories/BNN-OCR-WebApp/mnist_bnn.keras')
+model.save('/home/lreclusa/repositories/BNN-OCR-WebApp/mnist_bnn')

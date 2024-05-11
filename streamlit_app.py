@@ -130,8 +130,7 @@ def plot_preprocessed_image(img):
 def load_model_into_streamlit():
     with st.spinner("Loading TensorFlow model..."):
         loaded_model = load_model(
-            'mnist_bnn.keras',
-            safe_mode=False,
+            'mnist_bnn/',
             compile=True,
             custom_objects={
                 'neg_loglike':neg_loglike,
