@@ -1,6 +1,5 @@
 import streamlit as st
 from tensorflow.keras.models import load_model
-import tensorflow as tf
 import numpy as np
 import cv2
 from streamlit_drawable_canvas import st_canvas
@@ -85,7 +84,7 @@ def grab_digits_from_canvas(image):
         # Resize to 28x28
         resized = cv2.resize(digit, (28, 28), interpolation=cv2.INTER_AREA)
         # Normalize pixel values to 0-1
-        normalized = resized / 255.0
+        normalized = digit / 255.0
         mnist_digits.append(normalized)
 
     return mnist_digits
@@ -129,14 +128,10 @@ def plot_preprocessed_image(img):
 @st.cache_resource
 def load_model_into_streamlit():
     with st.spinner("Loading TensorFlow model..."):
-        loaded_model = load_model(
-            'mnist_bnn/',
-            compile=True,
-            custom_objects={
-                'neg_loglike':neg_loglike,
-                'divergence':divergence
-            }
-        )
+        loaded_model = load_model('mnist_bnn',
+                       compile=False,)
+# custom_objects={'neg_loglike':neg_loglike,
+#                 'divergence':divergence})
 
         loaded_model.trainable = False
     return loaded_model 
@@ -203,24 +198,24 @@ def predict_digit_from_canvas(canvas_data, num_samples):
                 col.image(img[ii].reshape(28,28,1),
                         clamp=True,
                         use_column_width='always')
-        # pred = np.zeros((len(img), 47, num_samples))
-        pred_dict = {}
+        pred = np.zeros((len(img), 47, num_samples))
         n_classes = 47
-        for num, digi in enumerate(img):
-            pred_prob = np.empty(shape=(num_samples, n_classes))
-            for ii in range(num_samples):
-                pred_prob[ii] = model(np.array(digi).reshape(-1, 28, 28, 1)).numpy().squeeze()
-                print(pred_prob[ii].shape)
-            pred50 = np.array([np.percentile(pred_prob[:, i], 50) for i in range(n_classes)])
-            pred_dict[num] = pred50
+        # for digi in img:
+        #     # pred_prob = np.empty(shape=(num_samples, n_classes))
+        #     # for ii in range(num_samples):
+        #         pred_prob[ii] = model(digi[np.newaxis, :]).numpy().squeeze()
+        #         pred50 = np.array([np.percentile(pred_prob[:, i], 50) for i in range(n_classes)])
+        #         pred_dict[]
+        for itr in range(num_samples):
+            pred[:,:,itr] = [mdl(np.array(digi).reshape(-1, 28, 28, 1)).numpy().squeexe() for digi in img]
         # pred = np.array([model(np.array(img).reshape(-1, 28, 28, 1)).numpy().squeeze() for ii in range(num_samples)])
         # st.write(pred.shape)
         # st.write(np.unique(pred))
-        # pred = np.sum(pred, axis=2) / num_samples
+        pred = np.sum(pred, axis=2) / num_samples
         # st.write(pred.shape)
         # st.write(np.unique(pred))
-        pred_digit = ''.join([map_dict[np.argmax(pred_dict[digi])] for digi in range(len(img))])
-        return img, pred_dict, pred_digit
+        pred_digit = ''.join([map_dict[np.argmax(pred[digi, :])] for digi in range(len(img))])
+        return img, pred, pred_digit
     return "No digit drawn or image not processed correctly."
 
 
@@ -286,11 +281,11 @@ if img is not None and plot_all_preds:
             st.write("**Probabilities across possible digits** "+f":red[{single_sample_warning}]")
         else:
             st.write("**Probabilities across possible digits**")
-        for ii in range(len(list(pred.keys()))):
+        for ii in range(pred.shape[0]):
             st.write(f"**Probabilities for position {ii}, Classified as a {pred_digit[ii]}**")
             if not isinstance(pred, np.ndarray):
                 pred = np.array(pred)
-            st.bar_chart(data=pred[ii].T)
+            st.bar_chart(data=pred.squeeze()[ii].T)
 
 
 def register_prediction_checkbox():
