@@ -207,7 +207,7 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         #         pred50 = np.array([np.percentile(pred_prob[:, i], 50) for i in range(n_classes)])
         #         pred_dict[]
         for itr in range(num_samples):
-            pred[:,:,itr] = [model(np.array(digi).reshape(-1, 28, 28, 1)).numpy().squeexe() for digi in img]
+            pred[:,:,itr] = [model(np.array(digi).reshape(-1, 28, 28, 1)).numpy().squeeze() for digi in img]
         # pred = np.array([model(np.array(img).reshape(-1, 28, 28, 1)).numpy().squeeze() for ii in range(num_samples)])
         # st.write(pred.shape)
         # st.write(np.unique(pred))
