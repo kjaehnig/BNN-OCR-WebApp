@@ -207,7 +207,7 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         #         pred50 = np.array([np.percentile(pred_prob[:, i], 50) for i in range(n_classes)])
         #         pred_dict[]
         for itr in range(num_samples):
-            pred[:,:,itr] = [mdl(np.array(digi).reshape(-1, 28, 28, 1)).numpy().squeexe() for digi in img]
+            pred[:,:,itr] = [model(np.array(digi).reshape(-1, 28, 28, 1)).numpy().squeexe() for digi in img]
         # pred = np.array([model(np.array(img).reshape(-1, 28, 28, 1)).numpy().squeeze() for ii in range(num_samples)])
         # st.write(pred.shape)
         # st.write(np.unique(pred))
@@ -231,7 +231,7 @@ with st.container():
     st.write("**Try it out! Draw digits (0-9) on the canvas**")
     # Streamlit canvas for drawing digits
     canvas_result = st_canvas(
-        stroke_width=12,
+        stroke_width=stroke_width,
         stroke_color='#ffffff',
         background_color='#000000', 
         height=315, 
@@ -248,7 +248,12 @@ with st.sidebar:
     if N > 10:
         st.warning("Setting N above 10 may slow down the predictions.")
 
-
+    stroke_width = st.number_input(
+        "Line Width",
+        min_value=1,
+        max_value=40,
+        value=10,
+    )
     plot_all_preds = st.checkbox('Plot digit(s) probabilities?', value=False, key='plot_all_checkbox')
 
     show_model_imgs = st.checkbox("Show model images?", value=False, key='plot_model_imgs')
