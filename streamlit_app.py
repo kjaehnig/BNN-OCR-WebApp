@@ -226,19 +226,6 @@ def clear_selection():
 
 # col1, col2 = st.columns(2)
 # with col1:
-with st.container():
-
-    st.write("**Try it out! Draw digits (0-9) on the canvas**")
-    # Streamlit canvas for drawing digits
-    canvas_result = st_canvas(
-        stroke_width=stroke_width,
-        stroke_color='#ffffff',
-        background_color='#000000', 
-        height=315, 
-        width=700,
-        drawing_mode='freedraw', 
-        key='canvas',
-        update_streamlit=True)
 
 
 with st.sidebar:
@@ -257,6 +244,21 @@ with st.sidebar:
     plot_all_preds = st.checkbox('Plot digit(s) probabilities?', value=False, key='plot_all_checkbox')
 
     show_model_imgs = st.checkbox("Show model images?", value=False, key='plot_model_imgs')
+
+with st.container():
+
+    st.write("**Try it out! Draw digits (0-9) on the canvas**")
+    # Streamlit canvas for drawing digits
+    canvas_result = st_canvas(
+        stroke_width=stroke_width,
+        stroke_color='#ffffff',
+        background_color='#000000',
+        height=315,
+        width=700,
+        drawing_mode='freedraw',
+        key='canvas',
+        update_streamlit=True)
+
 
 pred_digit = None
 if pred_digit is None:
