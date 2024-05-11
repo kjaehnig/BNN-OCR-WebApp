@@ -210,7 +210,7 @@ def predict_digit_from_canvas(canvas_data, num_samples):
             pred_prob = np.empty(shape=(num_samples, n_classes))
             for ii in range(num_samples):
                 pred_prob[ii] = model(np.array(digi).reshape(-1, 28, 28, 1)).numpy().squeeze()
-                print(pred_prob[ii])
+                print(pred_prob[ii].shape)
             pred50 = np.array([np.percentile(pred_prob[:, i], 50) for i in range(n_classes)])
             pred_dict[num] = pred50
         # pred = np.array([model(np.array(img).reshape(-1, 28, 28, 1)).numpy().squeeze() for ii in range(num_samples)])
@@ -290,7 +290,7 @@ if img is not None and plot_all_preds:
             st.write(f"**Probabilities for position {ii}, Classified as a {pred_digit[ii]}**")
             if not isinstance(pred, np.ndarray):
                 pred = np.array(pred)
-            st.bar_chart(data=pred.squeeze()[ii].T)
+            st.bar_chart(data=pred[ii].T)
 
 
 def register_prediction_checkbox():
