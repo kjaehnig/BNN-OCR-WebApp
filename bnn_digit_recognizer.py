@@ -94,8 +94,8 @@ def create_bnn():
     # tf.keras.layers.RandomBrightness(0.1),
     # Flatten(),
 
-    tfpl.Convolution2DFlipout(128,
-        kernel_size=(3,3),
+    tfpl.Convolution2DFlipout(48,
+        kernel_size=(3, 3),
         strides=(1, 1),
         padding='same',
         activation='linear',
@@ -104,9 +104,10 @@ def create_bnn():
     # SpatialDropout2D(0.05),
     Activation("relu"),
 
+
     MaxPooling2D((2, 2), padding='same'),
 
-    Conv2D(32,
+    Conv2D(64,
         kernel_size=(5, 5),
         strides=(1, 1),
         padding='same',
@@ -117,7 +118,7 @@ def create_bnn():
 
     MaxPooling2D((2, 2), padding='same'),
 
-    Conv2D(256,
+    Conv2D(128,
         kernel_size=(7, 7),
         strides=(1, 1),
         padding='same',
@@ -125,7 +126,7 @@ def create_bnn():
     # # SpatialDropout2D(0.01),
     #
     Activation("relu"),
-    MaxPooling2D((2, 2), padding='same'),
+    # MaxPooling2D((2, 2), padding='same'),
 
     Flatten(),
     Dense(128, activation='linear'),
@@ -309,6 +310,4 @@ if n_labels == 10:
     model.evaluate(mtest_images, mtest_labels)
     print(classification_report(mtest_labels, model.predict(mtest_images)))
 
-model.save('/home/lreclusa/repositories/BNN-OCR-WebApp/mnist_bnn.keras',
-           custom_objects={'neg_loglike': neg_loglike,
-                           'divergence': divergence})
+model.save('/home/lreclusa/repositories/BNN-OCR-WebApp/mnist_bnn.keras')
