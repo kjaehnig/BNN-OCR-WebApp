@@ -6,7 +6,7 @@ import cv2
 from streamlit_drawable_canvas import st_canvas
 import matplotlib.pyplot as plt
 import pandas as pd
-import pandas as pk
+import pickle as pk
 
 def load_bal_map():
     bal_maps = pd.read_csv('emnist-balanced-mapping.csv')
