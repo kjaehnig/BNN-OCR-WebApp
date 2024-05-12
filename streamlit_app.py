@@ -128,25 +128,25 @@ def load_model_into_streamlit():
 # #                 'divergence':divergence})
 #
 #         loaded_model.trainable = False
-    from bnn_digit_recognizer import create_bnn
-    def neg_loglike(ytrue, ypred):
-        return -ypred.log_prob(ytrue)
+        from bnn_digit_recognizer import create_bnn
+        def neg_loglike(ytrue, ypred):
+            return -ypred.log_prob(ytrue)
 
-    def divergence(q, p, _):
-        return tfd.kl_divergence(q, p) / 112799.
+        def divergence(q, p, _):
+            return tfd.kl_divergence(q, p) / 112799.
 
-    model = create_bnn(47)
-    model.compile(
-        optimizer=tf.keras.optimizers.Adam(
-            learning_rate=1e-3),
-        loss=neg_loglike,
-        metrics=['accuracy'],
-        experimental_run_tf_function=False
-                  )
-    with open("ocr_bnn_weights", 'rb') as whts:
-        weights_pk = pk.load(whts)
+        model = create_bnn(47)
+        model.compile(
+            optimizer=tf.keras.optimizers.Adam(
+                learning_rate=1e-3),
+            loss=neg_loglike,
+            metrics=['accuracy'],
+            experimental_run_tf_function=False
+                      )
+        with open("ocr_bnn_weights", 'rb') as whts:
+            weights_pk = pk.load(whts)
 
-    model.set_weights(weights_pk)
+        model.set_weights(weights_pk)
 
     return model
 
