@@ -223,7 +223,7 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         #         pred50 = np.array([np.percentile(pred_prob[:, i], 50) for i in range(n_classes)])
         #         pred_dict[]
         for itr in range(num_samples):
-            rot_img = np.array([np.rot90(ii) for ii in img]).reshape(-1, 28, 28, 1)
+            rot_img = np.array([np.rot90(ii, k=2) for ii in img]).reshape(-1, 28, 28, 1)
             pred[itr] = model(rot_img).mean().numpy()
         # pred = np.array([model(np.array(img).reshape(-1, 28, 28, 1)).numpy().squeeze() for ii in range(num_samples)])
         # st.write(pred.shape)
