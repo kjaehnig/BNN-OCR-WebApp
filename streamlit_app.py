@@ -113,7 +113,7 @@ def plot_prediction_probs(probs):
             ax.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='red', lw=10)
         elif ii == p50.argmax():
             ax.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='green', lw=15)
-    ax.set_xticks(ax.get_xticks().tolist())
+    ax.set_xticks([ii for ii in range(47)])
     ax.set_xticklabels([map_dict[ii] for ii in range(47)])
     # ax.set_title("BNN Predictions")
     ax.set_xlabel('Digit')
