@@ -144,7 +144,7 @@ def load_model_into_streamlit():
             metrics=['accuracy'],
             experimental_run_tf_function=False
                       )
-        with open("ocr_bnn_weights", 'rb') as whts:
+        with open("ocr_bnn_weights.pk", 'rb') as whts:
             weights_pk = pk.load(whts)
 
         model.set_weights(weights_pk)
