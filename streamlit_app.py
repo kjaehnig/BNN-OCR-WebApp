@@ -323,7 +323,7 @@ if img is not None and plot_all_preds:
             if not isinstance(pred, np.ndarray):
                 pred = np.array(pred)
             # st.bar_chart(data=pred.squeeze()[ii].T)
-            st.components.v1.html(plot_prediction_probs(pred[:, ii, :]), height=400)
+            st.pyplot(plot_prediction_probs(pred[:, ii, :]))
 
 def register_prediction_checkbox():
     if st.session_state.yes_checkbox_val:
