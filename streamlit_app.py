@@ -7,6 +7,7 @@ from streamlit_drawable_canvas import st_canvas
 import matplotlib.pyplot as plt
 import pandas as pd
 import pickle as pk
+import mpld3
 
 def load_bal_map():
     bal_maps = pd.read_csv('emnist-balanced-mapping.csv')
@@ -100,12 +101,22 @@ def process_image(image_data):
 
 
 def plot_prediction_probs(probs):
-    fig, ax = plt.subplots(figsize=(4,4))
-    ax.bar([map_dict[ii] for ii in range(probs.shape[0])], probs.squeeze(), tick_label=range(10))
-    ax.set_title("BNN Predictions")
+    fig, ax = plt.subplots(figsize=(10, 5))
+    # ax.bar([map_dict[ii] for ii in range(probs.shape[0])], probs.squeeze(), tick_label=range(10))
+    p16 = np.percentile(probs, 16, axis=0)
+    p84 = np.percentile(probs, 84, axis=0)
+    p50 = np.percentile(probs, 50, axis=0)
+
+    for ii in range(probs.shape[-1]):
+        if ii != p50.argmax(axis=1):
+            ax.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='red')
+        elif ii == p50.argmax(axis=1):
+            ax.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='green')
+    ax.set_xticklabels([''] + [map_dict[ii] for ii in range(probs.shape[-1])])
+    # ax.set_title("BNN Predictions")
     plt.xlabel('Probability')
     plt.ylabel('Digit')
-    return fig
+    return mpld3.fit_to_html(fig)
 
 
 def plot_preprocessed_image(img):
@@ -306,12 +317,12 @@ if img is not None and plot_all_preds:
             st.write("**Probabilities across possible digits** "+f":red[{single_sample_warning}]")
         else:
             st.write("**Probabilities across possible digits**")
-        for ii in range(pred.shape[0]):
+        for ii in range(len(img)):
             st.write(f"**Probabilities for position {ii}, Classified as a {pred_digit[ii]}**")
             if not isinstance(pred, np.ndarray):
                 pred = np.array(pred)
-            st.bar_chart(data=pred.squeeze()[ii].T)
-
+            # st.bar_chart(data=pred.squeeze()[ii].T)
+            st.components.v1.html(plot_prediction_probs(pred), height=150)
 
 def register_prediction_checkbox():
     if st.session_state.yes_checkbox_val:
