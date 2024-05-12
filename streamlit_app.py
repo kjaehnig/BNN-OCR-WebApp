@@ -318,11 +318,11 @@ if img is not None and plot_all_preds:
         else:
             st.write("**Probabilities across possible digits**")
         for ii in range(len(img)):
-            st.write(f"**Probabilities for position {ii}, Classified as a {pred_digit[ii]}**")
+            st.write(f"**Probabilities for position {ii}, Classified as {pred_digit[ii]}**")
             if not isinstance(pred, np.ndarray):
                 pred = np.array(pred)
             # st.bar_chart(data=pred.squeeze()[ii].T)
-            st.components.v1.html(plot_prediction_probs(pred), height=150)
+            st.components.v1.html(plot_prediction_probs(pred[:, ii, :]), height=150)
 
 def register_prediction_checkbox():
     if st.session_state.yes_checkbox_val:
