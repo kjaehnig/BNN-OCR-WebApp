@@ -101,7 +101,7 @@ def process_image(image_data):
 
 
 def plot_prediction_probs(probs):
-    fig, ax = plt.subplots()
+    fig = plt.figure()
     # ax.bar([map_dict[ii] for ii in range(probs.shape[0])], probs.squeeze(), tick_label=range(10))
     p16 = np.percentile(probs, 16, axis=0)
     p84 = np.percentile(probs, 84, axis=0)
@@ -110,9 +110,9 @@ def plot_prediction_probs(probs):
 
     for ii in range(probs.shape[-1]):
         if ii != p50.argmax():
-            ax.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='red', lw=3)
+            plt.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='red', lw=3)
         elif ii == p50.argmax():
-            ax.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='green', lw=5)
+            plt.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='green', lw=5)
     # ax.set_xticklabels([''] + [map_dict[ii] for ii in range(probs.shape[-1])])
     # ax.set_title("BNN Predictions")
     plt.xlabel('Probability')
