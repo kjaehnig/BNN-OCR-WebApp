@@ -5,13 +5,7 @@ import cv2
 from streamlit_drawable_canvas import st_canvas
 import matplotlib.pyplot as plt
 import pandas as pd
-
-def neg_loglike(ytrue, ypred):
-    return -ypred.log_prob(ytrue)
-
-def divergence(q,p,_):
-    return tfd.kl_divergence(q,p)/60000.
-
+import pandas as pk
 
 def load_bal_map():
     bal_maps = pd.read_csv('emnist-balanced-mapping.csv')
@@ -128,13 +122,33 @@ def plot_preprocessed_image(img):
 @st.cache_resource
 def load_model_into_streamlit():
     with st.spinner("Loading TensorFlow model..."):
-        loaded_model = load_model('mnist_bnn',
-                       compile=False,)
-# custom_objects={'neg_loglike':neg_loglike,
-#                 'divergence':divergence})
+#         loaded_model = load_model('mnist_bnn',
+#                        compile=False,)
+# # custom_objects={'neg_loglike':neg_loglike,
+# #                 'divergence':divergence})
+#
+#         loaded_model.trainable = False
+    from bnn_digit_recognizer import create_bnn
+    def neg_loglike(ytrue, ypred):
+        return -ypred.log_prob(ytrue)
 
-        loaded_model.trainable = False
-    return loaded_model 
+    def divergence(q, p, _):
+        return tfd.kl_divergence(q, p) / 112799.
+
+    model = create_bnn(47)
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(
+            learning_rate=1e-3),
+        loss=neg_loglike,
+        metrics=['accuracy'],
+        experimental_run_tf_function=False
+                  )
+    with open("ocr_bnn_weights", 'rb') as whts:
+        weights_pk = pk.load(whts)
+
+    model.set_weights(weights_pk)
+
+    return model
 
 model = load_model_into_streamlit()
 
@@ -198,7 +212,7 @@ def predict_digit_from_canvas(canvas_data, num_samples):
                 col.image(img[ii].reshape(28,28,1),
                         clamp=True,
                         use_column_width='always')
-        pred = np.zeros((len(img), 47, num_samples))
+        pred = np.zeros(num_samples, len(img), 47)
         n_classes = 47
         # for digi in img:
         #     # pred_prob = np.empty(shape=(num_samples, n_classes))
@@ -207,14 +221,15 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         #         pred50 = np.array([np.percentile(pred_prob[:, i], 50) for i in range(n_classes)])
         #         pred_dict[]
         for itr in range(num_samples):
-            pred[:,:,itr] = [model(np.array(digi).reshape(-1, 28, 28, 1)).numpy().squeeze() for digi in img]
+            pred[itr] = model(np.array(img).reshape(-1, 28, 28, 1)).mean().numpy()
         # pred = np.array([model(np.array(img).reshape(-1, 28, 28, 1)).numpy().squeeze() for ii in range(num_samples)])
         # st.write(pred.shape)
         # st.write(np.unique(pred))
-        pred = np.sum(pred, axis=2) / num_samples
+        # pred = np.sum(pred, axis=2) / num_samples
+        p50 = np.percentile(pred, axis=0).argmax(axis=1)
         # st.write(pred.shape)
         # st.write(np.unique(pred))
-        pred_digit = ''.join([map_dict[np.argmax(pred[digi, :])] for digi in range(len(img))])
+        pred_digit = ''.join([map_dict[p50[digi]] for digi in range(len(img))])
         return img, pred, pred_digit
     return "No digit drawn or image not processed correctly."
 
