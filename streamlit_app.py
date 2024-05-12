@@ -213,8 +213,9 @@ def predict_digit_from_canvas(canvas_data, num_samples):
                 col.image(img[ii].reshape(28,28,1),
                         clamp=True,
                         use_column_width='always')
-        pred = np.zeros(num_samples, len(img), 47)
         n_classes = 47
+        pred = np.zeros((num_samples, len(img), n_classes))
+
         # for digi in img:
         #     # pred_prob = np.empty(shape=(num_samples, n_classes))
         #     # for ii in range(num_samples):
