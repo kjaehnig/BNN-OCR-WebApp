@@ -101,23 +101,23 @@ def process_image(image_data):
 
 
 def plot_prediction_probs(probs):
-    fig = plt.figure()
+    fig = plt.figure(figsize=(8, 4))
     # ax.bar([map_dict[ii] for ii in range(probs.shape[0])], probs.squeeze(), tick_label=range(10))
-    p16 = np.percentile(probs, 16, axis=0)
-    p84 = np.percentile(probs, 84, axis=0)
+    p16 = np.percentile(probs, 2.5, axis=0)
+    p84 = np.percentile(probs, 97.5, axis=0)
     p50 = np.percentile(probs, 50, axis=0)
     print(probs.shape, p50.shape)
 
     for ii in range(probs.shape[-1]):
         if ii != p50.argmax():
-            plt.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='red', lw=3)
+            plt.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='red', lw=5)
         elif ii == p50.argmax():
-            plt.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='green', lw=5)
+            plt.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='green', lw=8)
     # ax.set_xticklabels([''] + [map_dict[ii] for ii in range(probs.shape[-1])])
     # ax.set_title("BNN Predictions")
-    plt.xlabel('Probability')
-    plt.ylabel('Digit')
-    return mpld3.fig_to_html(fig)
+    plt.xlabel('Digit')
+    plt.ylabel('Probability')
+    return fig
 
 
 def plot_preprocessed_image(img):
