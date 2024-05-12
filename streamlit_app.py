@@ -228,7 +228,7 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         # st.write(pred.shape)
         # st.write(np.unique(pred))
         # pred = np.sum(pred, axis=2) / num_samples
-        p50 = np.percentile(pred, axis=0).argmax(axis=1)
+        p50 = np.percentile(pred, 50, axis=0).argmax(axis=1)
         # st.write(pred.shape)
         # st.write(np.unique(pred))
         pred_digit = ''.join([map_dict[p50[digi]] for digi in range(len(img))])
