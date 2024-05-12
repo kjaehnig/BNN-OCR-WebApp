@@ -117,7 +117,7 @@ def plot_prediction_probs(probs):
     # ax.set_title("BNN Predictions")
     plt.xlabel('Probability')
     plt.ylabel('Digit')
-    return mpld3.fit_to_html(fig)
+    return mpld3.fig_to_html(fig)
 
 
 def plot_preprocessed_image(img):
