@@ -106,11 +106,12 @@ def plot_prediction_probs(probs):
     p16 = np.percentile(probs, 16, axis=0)
     p84 = np.percentile(probs, 84, axis=0)
     p50 = np.percentile(probs, 50, axis=0)
+    print(probs.shape, p50.shape)
 
     for ii in range(probs.shape[-1]):
-        if ii != p50.argmax(axis=1):
+        if ii != p50.argmax():
             ax.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='red')
-        elif ii == p50.argmax(axis=1):
+        elif ii == p50.argmax():
             ax.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='green')
     ax.set_xticklabels([''] + [map_dict[ii] for ii in range(probs.shape[-1])])
     # ax.set_title("BNN Predictions")
