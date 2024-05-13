@@ -112,7 +112,7 @@ def plot_prediction_probs(probs):
         if ii != p50.argmax():
             ax.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='red', lw=10)
         elif ii == p50.argmax():
-            ax.axvline(ii, ymin=0.0, ymax=p84[ii], color='green', lw=2, ls='--')
+            ax.axvline(ii, ymin=0.0, ymax=p84[ii], color='gray', lw=2, alpha=0.5, ls='--')
             ax.axvline(ii, ymin=p16[ii], ymax=p84[ii], color='green', lw=10)
     ax.set_xticks([ii for ii in range(47)])
     ax.set_xticklabels([map_dict[ii] for ii in range(47)])

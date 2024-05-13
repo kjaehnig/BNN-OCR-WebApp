@@ -141,7 +141,7 @@ def create_bnn(n_labels):
     # MaxPooling2D((2, 2), padding='same'),
 
     Flatten(),
-    Dense(1024, activation='linear'),
+    Dense(256, activation='linear'),
     # Dropout(0.05),
     # tfpl.DenseFlipout(64,
     #                   activation='linear',
