@@ -6,6 +6,7 @@ import sklearn as skl
 import pandas as pd
 from sklearn.metrics import classification_report
 from sklearn.utils import class_weight
+import pickle as pk
 
 import tensorflow_probability as tfp
 import tensorflow as tf
@@ -140,7 +141,7 @@ def create_bnn(n_labels):
     # MaxPooling2D((2, 2), padding='same'),
 
     Flatten(),
-    Dense(128, activation='linear'),
+    Dense(1024, activation='linear'),
     # Dropout(0.05),
     # tfpl.DenseFlipout(64,
     #                   activation='linear',
@@ -149,23 +150,6 @@ def create_bnn(n_labels):
     Activation("relu"),
     Dropout(0.5),
 
-    Dense(128, activation='linear'),
-    # Dropout(0.05),
-    # tfpl.DenseFlipout(64,
-    #                   activation='linear',
-    #                   kernel_divergence_fn=divergence,
-    #                   bias_divergence_fn=divergence),
-    Activation("relu"),
-    Dropout(0.5),
-
-    Dense(128, activation='linear'),
-    # Dropout(0.05),
-    # tfpl.DenseFlipout(64,
-    #                   activation='linear',
-    #                   kernel_divergence_fn=divergence,
-    #                   bias_divergence_fn=divergence),
-    Activation("relu"),
-    Dropout(0.5),
 
     # tfpl.DenseFlipout(64,
     #                   activation='linear',
@@ -224,7 +208,7 @@ def main():
     neg_loglike = env_dict['neg_loglike']
 
     model = create_bnn(n_labels)
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=5e-4),
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
                   loss=neg_loglike,
                   metrics=['accuracy'],
                   experimental_run_tf_function=False
@@ -251,6 +235,10 @@ def main():
         target_names=env_dict['lbl_names']
         )
     )
+    mdl_weights = model.get_weights()
+
+    with open("ocr_bnn_weights.pk", "wb") as f:
+        pk.dump(mdl_weights, f)
 
     model.save('/home/lreclusa/repositories/BNN_OCR-WebApp/mnist_bnn')
     model.save_weights(
