@@ -116,6 +116,15 @@ def create_bnn(n_labels):
     # SpatialDropout2D(0.05),
     Activation("relu"),
 
+    tfpl.Convolution2DFlipout(48,
+        kernel_size=(7, 7),
+        strides=(1, 1),
+        padding='same',
+        activation='linear',
+        kernel_divergence_fn=divergence,
+        bias_divergence_fn=divergence, ),
+    # SpatialDropout2D(0.05),
+    Activation("relu"),
 
     MaxPooling2D((2, 2), padding='same'),
 
@@ -124,9 +133,8 @@ def create_bnn(n_labels):
         strides=(1, 1),
         padding='same',
         activation='linear'),
-    # # SpatialDropout2D(0.01),
-    #
     Activation("relu"),
+    SpatialDropout2D(0.1),
 
     MaxPooling2D((2, 2), padding='same'),
 
@@ -135,9 +143,10 @@ def create_bnn(n_labels):
         strides=(1, 1),
         padding='same',
         activation='linear'),
-    # # SpatialDropout2D(0.01),
-    #
     Activation("relu"),
+    SpatialDropout2D(0.1),
+
+
     # MaxPooling2D((2, 2), padding='same'),
 
     Flatten(),
@@ -147,7 +156,7 @@ def create_bnn(n_labels):
     #                   activation='linear',
     #                   kernel_divergence_fn=divergence,
     #                   bias_divergence_fn=divergence),
-    Activation("relu"),
+    Activation("swish"),
     Dropout(0.5),
 
 
@@ -208,7 +217,7 @@ def main():
     neg_loglike = env_dict['neg_loglike']
 
     model = create_bnn(n_labels)
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3, beta_1=0.8),
                   loss=neg_loglike,
                   metrics=['accuracy'],
                   experimental_run_tf_function=False
@@ -241,9 +250,9 @@ def main():
         pk.dump(mdl_weights, f)
 
     model.save('/home/lreclusa/repositories/BNN_OCR-WebApp/mnist_bnn')
-    model.save_weights(
-        '/home/lreclusa/repositories/BNN-OCR-WebApp/mnist_bnn/mnist_bnn_weights.weights.h5',
-        overwrite=False)
+    # model.save_weights(
+    #     '/home/lreclusa/repositories/BNN-OCR-WebApp/mnist_bnn/mnist_bnn_weights.weights.h5',
+    #     overwrite=False)
 
     # cm = skl.metrics.confusion_matrix(np.argmax(test_labels, axis=1), mdl_preds)
     from matplotlib import rcParams
