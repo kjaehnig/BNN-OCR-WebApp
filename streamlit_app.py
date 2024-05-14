@@ -182,7 +182,7 @@ if "yes_checkbox_val" not in st.session_state:
 if 'no_checkbox_val' not in st.session_state:
     st.session_state['no_checkbox_val'] = False
 
-st.title('Bayesian MNIST Multi-Digit Classifier')
+st.title('Bayesian EMNIST Multi-Character Classifier')
 
 with st.expander("Description"):
     st.write("""
@@ -191,7 +191,8 @@ with st.expander("Description"):
     in the data, as well as in the model itself. Prediction probabilities across all of the 
     class labels in a prediction provide a better picture of how sure (or unsure) the 
     model is about it's final classification. This app here uses OpenCV to separate out 
-    numbers to perform individual predictions, then reconstructing the resulting number.
+    characters to perform individual predictions, then reconstructing the resulting 
+    written input.
     """)
 
 def predict_digit_from_canvas(canvas_data, num_samples):
@@ -248,7 +249,7 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         # st.write(np.unique(pred))
         pred_digit = ''.join([map_dict[p50[digi]] for digi in range(len(img))])
         return img, pred, pred_digit
-    return "No digit drawn or image not processed correctly."
+    return "No characters drawn or image not processed correctly."
 
 
 def clear_selection():
@@ -265,7 +266,7 @@ with st.sidebar:
     # Sampling number input
     N = st.slider('N (Number of samples)', min_value=1, max_value=50, value=2)
     if N > 10:
-        st.warning("Setting N above 10 may slow down the predictions.")
+        st.warning("Setting N above 10 may slow down prediction times.")
 
     stroke_width = st.number_input(
         "Line Width",
@@ -279,7 +280,7 @@ with st.sidebar:
 
 with st.container():
 
-    st.write("**Try it out! Draw digits (0-9) on the canvas**")
+    st.write("**Try it out! Draw characters [0-9][A-Z][a-z] on the canvas**")
     # Streamlit canvas for drawing digits
     canvas_result = st_canvas(
         stroke_width=stroke_width,
@@ -299,10 +300,10 @@ if pred_digit is None:
 img = None
 # Button to submit the drawing for prediction
 if st.button('Submit'):
-    with st.spinner("**Processing and predicting digit from image...**"):
+    with st.spinner("**Processing and predicting characters from image...**"):
         img, pred, pred_digit = predict_digit_from_canvas(canvas_result.image_data, N)
         pred_digit_str = ''.join([str(dig) for dig in pred_digit])
-        st.write(f"## **Reconstructed number: {pred_digit_str}**")
+        st.write(f"## **Reconstructed Input: {pred_digit_str}**")
 
 # plot_model_image = False
 # if img is not None and plot_model_image:
