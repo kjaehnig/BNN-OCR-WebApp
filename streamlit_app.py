@@ -225,7 +225,7 @@ def predict_digit_from_canvas(canvas_data, num_samples):
         if show_model_imgs:
             allcols = st.columns(len(img))
             for ii, col in enumerate(allcols):
-                col.image(img[ii].reshape(28,28,1),
+                col.image(img[ii].reshape(28, 28, 1),
                         clamp=True,
                         use_column_width='always')
         n_classes = 47
